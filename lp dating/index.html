@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Temukan Pasanganmu</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: linear-gradient(to right, #f06292, #f8bbd0);
+      color: #ffffff;
+      text-align: center;
+      padding: 20px;
+    }
+    h1 {
+      font-size: 32px;
+      margin-bottom: 10px;
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 20px;
+      max-width: 1000px;
+      margin: 30px auto;
+    }
+    .card {
+      background-color: white;
+      color: #444;
+      border-radius: 10px;
+      overflow: hidden;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+      cursor: pointer;
+      transition: transform 0.2s, border 0.2s;
+    }
+    .card:hover {
+      transform: scale(1.02);
+    }
+    .card.selected {
+      border: 3px solid #d10063;
+    }
+    .card img {
+      width: 100%;
+      height: 200px;
+      object-fit: cover;
+    }
+    .info {
+      padding: 15px;
+    }
+    .info h3 {
+      color: #d10063;
+      margin: 0 0 5px;
+    }
+    .info p {
+      font-size: 14px;
+      color: #666;
+      margin: 5px 0;
+    }
+    .button {
+      background-color: #ff3385;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      margin-top: 10px;
+      cursor: pointer;
+      border-radius: 5px;
+      font-weight: bold;
+    }
+    .button:hover {
+      background-color: #e60073;
+    }
+    .next-button {
+      background-color: #333;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 25px;
+      font-size: 16px;
+      font-weight: bold;
+      margin: 20px auto;
+      display: block;
+      cursor: pointer;
+    }
+    .cta-button {
+      background-color: #25d366;
+      color: white;
+      padding: 14px 28px;
+      border: none;
+      border-radius: 50px;
+      font-size: 18px;
+      font-weight: bold;
+      text-decoration: none;
+      display: inline-block;
+      margin: 10px 0 30px;
+      cursor: pointer;
+    }
+    .feature-box {
+      background-color: rgba(0, 0, 0, 0.5);
+      padding: 20px;
+      border-radius: 10px;
+      max-width: 500px;
+      margin: 30px auto;
+    }
+    .feature-box p {
+      color: #f8bbd0;
+    }
+    #modal {
+      display: none;
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: rgba(0, 0, 0, 0.7);
+      justify-content: center;
+      align-items: center;
+      z-index: 999;
+    }
+    .modal-content {
+      background: #fff;
+      color: #000;
+      padding: 30px 20px;
+      border-radius: 10px;
+      max-width: 400px;
+      width: 90%;
+      text-align: center;
+      position: relative;
+    }
+    .modal-content h3 {
+      color: #d10063;
+      margin: 0 0 10px;
+    }
+    .modal-content p {
+      margin-top: 20px;
+      font-size: 14px;
+    }
+    .close-btn {
+      position: absolute;
+      top: 10px; right: 15px;
+      background: none;
+      border: none;
+      font-size: 22px;
+      cursor: pointer;
+      color: #888;
+    }
+    .close-btn:hover {
+      color: #000;
+    }
+
+    /* Chat Box */
+    #chat-box {
+      display: none;
+      background: white;
+      color: black;
+      position: fixed;
+      bottom: 80px;
+      right: 20px;
+      border-radius: 10px;
+      padding: 20px;
+      width: 300px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+      z-index: 9999;
+    }
+    .chat-header {
+      font-weight: bold;
+      color: #d10063;
+      margin-bottom: 10px;
+    }
+    .chat-input {
+      width: 100%;
+      padding: 10px;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+      resize: none;
+    }
+    .chat-buttons {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 10px;
+    }
+    .send-message {
+      background: #25d366;
+      color: white;
+      border: none;
+      padding: 8px 15px;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    .close-chat {
+      background: #ccc;
+      color: black;
+      border: none;
+      padding: 8px 15px;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>Temukan Pasanganmu Hari Ini!</h1>
+
+  <!-- Container wanita -->
+  <div class="grid" id="wanita-container"></div>
+
+  <!-- Tombol Next -->
+  <button class="next-button" onclick="tampilkanBerikutnya()">Next</button>
+
+  <!-- Tombol Chat -->
+  <button class="cta-button" onclick="bukaChat()">Chat Sekarang</button>
+
+  <!-- Info Menarik -->
+  <div class="feature-box">
+    <h2>Fitur Menarik</h2>
+    <p>✔️ Mudah digunakan</p>
+    <p>✔️ Pasangan yang sesuai dengan minat Anda</p>
+    <p>✔️ Chat langsung tanpa hambatan</p>
+  </div>
+
+  <!-- Modal -->
+  <div id="modal">
+    <div class="modal-content">
+      <button class="close-btn" onclick="tutupModal()">×</button>
+      <h3 id="modal-title">Nama</h3>
+      <p id="modal-body">Biodata dan hobi akan tampil di sini.</p>
+    </div>
+  </div>
+
+  <!-- Chat Box -->
+  <div id="chat-box">
+    <div class="chat-header">Selamat datang di Chat!</div>
+    <p>Ketik pesan Anda di bawah untuk mulai chatting!</p>
+    <textarea class="chat-input" placeholder="Ketik pesan..." rows="4" id="chatMessage"></textarea>
+    <div class="chat-buttons">
+      <button class="send-message" onclick="kirimKeWA()">Kirim Pesan</button>
+      <button class="close-chat" onclick="tutupChat()">Tutup Chat</button>
+    </div>
+  </div>
+
+  <script>
+    const dataWanita = [
+      { nama: "Siska Rosita", foto: "https://i.imgur.com/shOUXdX.jpeg", info: "22 thn | Bandung | Mahasiswa", biodata: "Aku ceria, penyayang hewan, suka alam." },
+      { nama: "Nina Karlina", foto: "https://i.imgur.com/o35RYTU.jpeg", info: "24 thn | Jakarta | Mahasiswa", biodata: "Aku suka ngobrol, kopi dan jalan sore." },
+      { nama: "Rahma Kania", foto: "https://i.imgur.com/QLUntwH.jpeg", info: "21 thn | Surabaya | Mahasiswi", biodata: "Aku pendiam tapi setia dan suka film." },
+      { nama: "Diana Lestari", foto: "https://i.imgur.com/hlh3JAG.jpeg", info: "23 thn | Yogyakarta | Kantoran", biodata: "Aku suka nyanyi dan suasana tenang." },
+      { nama: "Eka Ratnasari", foto: "https://i.imgur.com/v2qap2w.jpeg", info: "25 thn | Bali | Adventure", biodata: "Aku anak pantai yang suka senja." },
+      { nama: "Jihan Fadillah", foto: "https://i.imgur.com/zs1Zz0C.jpeg", info: "22 thn | Medan | Gamer", biodata: "Aku suka main game dan ngobrol santai." }  
+    ];
+
+    let index = 0;
+    let pasanganTerpilih = null;
+
+    function tampilkanWanita() {
+      const container = document.getElementById("wanita-container");
+      container.innerHTML = "";
+      for (let i = index; i < index + 6 && i < dataWanita.length; i++) {
+        const w = dataWanita[i];
+        const cardHTML = `
+          <div class="card" onclick="pilihPasangan(this, '${w.nama}')">
+            <img src="${w.foto}" alt="${w.nama}">
+            <div class="info">
+              <h3>${w.nama}</h3>
+              <p>${w.info}</p>
+              <button class="button" onclick="event.stopPropagation(); tampilkanDeskripsi('${w.nama}', '${w.biodata}')">Tentang</button>
+            </div>
+          </div>`;
+        container.innerHTML += cardHTML;
+      }
+    }
+
+    function tampilkanDeskripsi(nama, biodata) {
+      document.getElementById("modal-title").innerText = nama;
+      document.getElementById("modal-body").innerText = biodata;
+      document.getElementById("modal").style.display = "flex";
+    }
+
+    function tutupModal() {
+      document.getElementById("modal").style.display = "none";
+    }
+
+    function tampilkanBerikutnya() {
+      if (index + 6 < dataWanita.length) {
+        index += 6;
+        tampilkanWanita();
+      }
+    }
+
+    function pilihPasangan(card, nama) {
+      document.querySelectorAll(".card").forEach(c => c.classList.remove("selected"));
+      card.classList.add("selected");
+      pasanganTerpilih = nama;
+    }
+
+    function bukaChat() {
+      if (!pasanganTerpilih) {
+        alert("Silakan pilih pasangan terlebih dahulu.");
+        return;
+      }
+      document.getElementById("chat-box").style.display = "block";
+    }
+
+    function tutupChat() {
+      document.getElementById("chat-box").style.display = "none";
+    }
+
+    function kirimKeWA() {
+      const pesan = document.getElementById("chatMessage").value;
+      const nomor = "6281234567890"; // Ganti dengan nomor WA kamu
+      if (!pesan.trim()) {
+        alert("Pesan tidak boleh kosong.");
+        return;
+      }
+      const link = `https://wa.me/${nomor}?text=Halo ${pasanganTerpilih}, ${encodeURIComponent(pesan)}`;
+      // window.open(link, "_blank");
+      window.location.href = "landingpage-chat-bot-upgraded.html";
+    }
+
+    tampilkanWanita();
+  </script>
+</body>
+</html>
